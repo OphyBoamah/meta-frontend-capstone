@@ -12,7 +12,7 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import * as Yup from 'yup';
+import * as Yup from "yup";
 import FullScreenSection from "./FullScreenSection";
 import useSubmit from "../hooks/useSubmit";
 import { useAlertContext } from "../context/alertContext";
@@ -24,19 +24,23 @@ const ContactMeSection = () => {
   const formik = useFormik({
     // Form validation
     initialValues: {
-      firstName: "",
+      date: "",
+      time: "",
+      guests: "",
+      name: "",
       email: "",
-      type: "hireMe",
-      comment: ""
+      details: "",
     },
     onSubmit: (values) => {
       submit("", values);
     },
     validationSchema: Yup.object({
-      firstName: Yup.string().required("Required"),
+      name: Yup.string().required("Required"),
       email: Yup.string().email("Invalid email address").required("Required"),
-      comment: Yup.string().min(25, "Must be at least 25 characters").required("Required")
-    })
+      // details: Yup.string()
+      //   .min(5, "Must be at least 25 characters")
+      //   .required("Required"),
+    }),
   });
 
   // Show an alert when the form is submitted successfully
@@ -44,8 +48,7 @@ const ContactMeSection = () => {
     if (response) {
       onOpen(response.type, response.message);
       // Reset the form if the response is successful
-      if (response.type === "success")
-        formik.resetForm();
+      if (response.type === "success") formik.resetForm();
     }
   }, [response]);
 
@@ -53,10 +56,10 @@ const ContactMeSection = () => {
     <FullScreenSection
       isDarkBackground
       backgroundColor="#512DA8"
-      py={16}
+      // py={4}
       spacing={8}
     >
-      <VStack w="1024px" p={32} alignItems="flex-start">
+      <VStack w="1024px" p={24} alignItems="flex-start">
         <Heading as="h1" id="contactme-section">
           Table Reservation
         </Heading>
@@ -65,7 +68,52 @@ const ContactMeSection = () => {
           <form onSubmit={formik.handleSubmit}>
             <VStack spacing={4}>
               {/* Show the error messages for each field when the field is touched and the validation fails */}
-              <FormControl isInvalid={!!formik.errors.firstName && formik.touched.firstName}>
+              <FormControl
+                isInvalid={!!formik.errors.date && formik.touched.date}
+              >
+                <FormLabel htmlFor="date">Reservation Date</FormLabel>
+                <Input
+                  type="date"
+                  id="date"
+                  name="date"
+                  {...formik.getFieldProps("date")} // Make the Input components from Chakra UI controlled components
+                />
+                {/* Show the error messages for each field when the field is touched and the validation fails */}
+                <FormErrorMessage>{formik.errors.date}</FormErrorMessage>
+              </FormControl>
+              <FormControl
+                isInvalid={!!formik.errors.time && formik.touched.time}
+              >
+                <FormLabel htmlFor="date">Reservation Time</FormLabel>
+                <Input
+                  type="time"
+                  id="time"
+                  name="time"
+                  {...formik.getFieldProps("time")} // Make the Input components from Chakra UI controlled components
+                />
+                {/* Show the error messages for each field when the field is touched and the validation fails */}
+                <FormErrorMessage>{formik.errors.time}</FormErrorMessage>
+              </FormControl>
+              <FormControl
+                isInvalid={!!formik.errors.guests && formik.touched.guests}
+              >
+                <FormLabel htmlFor="guests">Number of Guests</FormLabel>
+                <Input
+                  type="number"
+                  min="1"
+                  max="10"
+                  id="guests"
+                  name="guests"
+                  {...formik.getFieldProps("guests")} // Make the Input components from Chakra UI controlled components
+                />
+                {/* Show the error messages for each field when the field is touched and the validation fails */}
+                <FormErrorMessage>{formik.errors.guests}</FormErrorMessage>
+              </FormControl>
+              <FormControl
+                isInvalid={
+                  !!formik.errors.firstName && formik.touched.firstName
+                }
+              >
                 <FormLabel htmlFor="firstName">Name</FormLabel>
                 <Input
                   id="firstName"
@@ -75,7 +123,9 @@ const ContactMeSection = () => {
                 {/* Show the error messages for each field when the field is touched and the validation fails */}
                 <FormErrorMessage>{formik.errors.firstName}</FormErrorMessage>
               </FormControl>
-              <FormControl isInvalid={!!formik.errors.email && formik.touched.email}>
+              <FormControl
+                isInvalid={!!formik.errors.email && formik.touched.email}
+              >
                 {/* Show the error messages for each field when the field is touched and the validation fails */}
                 <FormLabel htmlFor="email">Email Address</FormLabel>
                 <Input
@@ -87,23 +137,10 @@ const ContactMeSection = () => {
                 {/* Show the error messages for each field when the field is touched and the validation fails */}
                 <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
               </FormControl>
-              <FormControl>
-                <FormLabel htmlFor="type">Type of enquiry</FormLabel>
-                <Select 
-                  id="type" 
-                  name="type"
-                  {...formik.getFieldProps("type")} // Make the Input components from Chakra UI controlled components
-                >
-                  <option value="hireMe">Freelance project proposal</option>
-                  <option value="openSource">
-                    Open source consultancy session
-                  </option>
-                  <option value="other">Other</option>
-                </Select>
-              </FormControl>
-              {/* Show the error messages for each field when the field is touched and the validation fails */}
-              <FormControl isInvalid={!!formik.errors.comment && formik.touched.comment}>
-                <FormLabel htmlFor="comment">Your message</FormLabel>
+              <FormControl
+                isInvalid={!!formik.errors.comment && formik.touched.comment}
+              >
+                <FormLabel htmlFor="comment">Extra Details?</FormLabel>
                 <Textarea
                   id="comment"
                   name="comment"
@@ -114,7 +151,12 @@ const ContactMeSection = () => {
                 <FormErrorMessage>{formik.errors.comment}</FormErrorMessage>
               </FormControl>
               {/* Show a loading indicator */}
-              <Button type="submit" colorScheme="purple" width="full" isLoading={isLoading}>
+              <Button
+                type="submit"
+                colorScheme="purple"
+                width="full"
+                isLoading={isLoading}
+              >
                 Submit
               </Button>
             </VStack>
